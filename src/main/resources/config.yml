@@ -35,3 +35,13 @@ connection-check:
     &cUnstable connection
     &fYour ping is too high: &e%ping%ms&7/&e%max%ms
   broadcast-message: '&c%player% &7was kicked for &eUnstable Connection &7(&c%ping%ms&7)'
+
+# ----------------------------------------------------------
+#  Join / Quit Messages
+#  Placeholders:
+#    %player%       - the player who joined/left
+#    %online%       - current online count
+#    %max_online%   - max players
+# ----------------------------------------------------------
+join-message: '&b%player% &7joined the game &8(&b%online%&7/&b%max_online%&8)'
+quit-message: '&b%player% &7left the game &8(&b%online%&7/&b%max_online%&8)'

@@ -34,6 +34,7 @@ public final class Platform extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new NoDamage(this), this);
         getServer().getPluginManager().registerEvents(new Protection(this), this);
         getServer().getPluginManager().registerEvents(new KitRestore(this, this.playerJoin), this);
+        getServer().getPluginManager().registerEvents(new Welcome(this), this);
 
         // ---- unstable connection ----
         this.unstableConnection = new UnstableConnection(this);
@@ -86,6 +87,7 @@ public final class Platform extends JavaPlugin {
             cfg.setDefaults(defaults);
         }
 
+        // ---- spawn ----
         setIfMissing(cfg, "spawn.world", "world");
         setIfMissing(cfg, "spawn.x", Double.valueOf(0.5D));
         setIfMissing(cfg, "spawn.y", Double.valueOf(100.0D));
@@ -93,15 +95,22 @@ public final class Platform extends JavaPlugin {
         setIfMissing(cfg, "spawn.yaw", Float.valueOf(0.0F));
         setIfMissing(cfg, "spawn.pitch", Float.valueOf(0.0F));
 
+        // ---- connection check ----
         setIfMissing(cfg, "connection-check.enabled", Boolean.valueOf(true));
         setIfMissing(cfg, "connection-check.ping-threshold", Integer.valueOf(150));
         setIfMissing(cfg, "connection-check.check-interval", Integer.valueOf(20));
         setIfMissing(cfg, "connection-check.grace-seconds", Integer.valueOf(30));
         setIfMissing(cfg, "connection-check.warn-cooldown", Integer.valueOf(5));
         setIfMissing(cfg, "connection-check.kick-message",
-                "&cUnstable connection\n&fYour ping is too high: &e%ping%ms&7/&e%max%ms");
+                "&cUnstable connection\\n&fYour ping is too high: &e%ping%ms&7/&e%max%ms");
         setIfMissing(cfg, "connection-check.broadcast-message",
                 "&c%player% &7was kicked for &eUnstable Connection &7(&c%ping%ms&7)");
+
+        // ---- messages ----
+        setIfMissing(cfg, "join-message",
+                "&b%player% &7joined the game &8(&b%online%&7/&b%max_online%&8)");
+        setIfMissing(cfg, "quit-message",
+                "&b%player% &7left the game &8(&b%online%&7/&b%max_online%&8)");
 
         try {
             cfg.save(configFile);
