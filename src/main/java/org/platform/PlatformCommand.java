@@ -25,9 +25,6 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
         this.playerJoin = playerJoin;
     }
 
-    // ============================================================
-    //  onCommand
-    // ============================================================
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
@@ -38,7 +35,6 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
 
         String sub = args[0].toLowerCase();
 
-        // ---------- /platform setspawn ----------
         if (sub.equals("setspawn")) {
             if (!sender.hasPermission("platform.setspawn")) {
                 sendNoPerm(sender);
@@ -47,7 +43,6 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
             return handleSetSpawn(sender);
         }
 
-        // ---------- /platform kit [player] ----------
         if (sub.equals("kit")) {
             if (!sender.hasPermission("platform.kit")) {
                 sendNoPerm(sender);
@@ -56,12 +51,10 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
             return handleKit(sender, args);
         }
 
-        // ---------- /platform creator ----------
         if (sub.equals("creator")) {
             return handleCreator(sender);
         }
 
-        // ---------- /platform cc ... ----------
         if (sub.equals("cc") || sub.equals("connectioncheck")) {
             if (!sender.hasPermission("platform.connection")) {
                 sendNoPerm(sender);
@@ -70,7 +63,6 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
             return handleConnection(sender, args);
         }
 
-        // ---------- /platform reload ----------
         if (sub.equals("reload")) {
             if (!sender.hasPermission("platform.reload")) {
                 sendNoPerm(sender);
@@ -91,9 +83,6 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
-    // ============================================================
-    //  /platform setspawn
-    // ============================================================
     private boolean handleSetSpawn(CommandSender sender) {
         if (!(sender instanceof Player)) {
             sender.sendMessage(colorize("&cOnly players can use setspawn."));
@@ -120,9 +109,6 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
-    // ============================================================
-    //  /platform kit [player]
-    // ============================================================
     private boolean handleKit(CommandSender sender, String[] args) {
         Player target;
 
@@ -156,9 +142,6 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
-    // ============================================================
-    //  /platform creator
-    // ============================================================
     private boolean handleCreator(CommandSender sender) {
         sender.sendMessage(colorize("&8&m----------------------------------"));
         sender.sendMessage(colorize("&6&lPlatform &7- &fCreated by &bMuvixo"));
@@ -167,9 +150,6 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
-    // ============================================================
-    //  /platform cc ...
-    // ============================================================
     private boolean handleConnection(CommandSender sender, String[] args) {
         if (this.connection == null) {
             sender.sendMessage(colorize("&cError: Connection listener not found."));
@@ -320,9 +300,6 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
         }
     }
 
-    // ============================================================
-    //  Help
-    // ============================================================
     private void sendHelp(CommandSender sender) {
         sender.sendMessage(colorize("&8&m----------------------------------"));
         sender.sendMessage(colorize("&6&lPlatform &7- &fCommands"));
@@ -354,9 +331,6 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(colorize("&8&m----------------------------------"));
     }
 
-    // ============================================================
-    //  Tab Completer
-    // ============================================================
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> out = new ArrayList<String>();
@@ -418,9 +392,6 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
         return out;
     }
 
-    // ============================================================
-    //  Helpers
-    // ============================================================
     private void sendNoPerm(CommandSender sender) {
         sender.sendMessage(colorize("&cYou do not have permission to do this."));
     }

@@ -22,3 +22,17 @@ permissions:
   platform.reload:
     description: Allows reloading the config
     default: op
+
+  # ---- Protection ----
+  platform.bypass:
+    description: Bypass ALL protection (break, place, drop)
+    default: op
+  platform.break:
+    description: Allows breaking map blocks
+    default: false
+  platform.place:
+    description: Allows placing blocks
+    default: false
+  platform.drop:
+    description: Allows dropping items
+    default: false

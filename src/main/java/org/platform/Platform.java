@@ -31,6 +31,7 @@ public final class Platform extends JavaPlugin {
         this.playerJoin = new PlayerJoin(this);
         getServer().getPluginManager().registerEvents(this.playerJoin, this);
         getServer().getPluginManager().registerEvents(new NoDamage(this), this);
+        getServer().getPluginManager().registerEvents(new Protection(this), this);
 
         // ---- unstable connection ----
         this.unstableConnection = new UnstableConnection(this);

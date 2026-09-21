@@ -10,6 +10,7 @@ Platform plugin for **Minecraft 1.8.8** — CarbonSpigot compatible.
 - **No Damage** — Players are invincible, no HP is ever lost
 - **No Fall Damage** — Players never take fall damage
 - **Infinite Food** — Players never get hungry
+- **Protection** — Players can't break/place blocks or drop items (permission-based)
 - **Unstable Connection** — Kicks high-ping players with full command set
 - **Spawn System** — Set once, players teleport there on join / respawn
 - **Safe config updates** — New options are merged into config.yml without wiping your settings
@@ -34,12 +35,35 @@ Aliases: `/pf`
 
 ## Permissions
 
+### Commands
+
 | Permission | Default | Description |
 |---|---|---|
 | `platform.kit` | op | Give the cosmetic kit |
 | `platform.setspawn` | op | Set the spawn point |
 | `platform.connection` | op | Manage the connection check |
 | `platform.reload` | op | Reload the config |
+
+### Protection
+
+| Permission | Default | Description |
+|---|---|---|
+| `platform.bypass` | op | Bypass ALL protection (break, place, drop) |
+| `platform.break` | false | Allow breaking map blocks |
+| `platform.place` | false | Allow placing blocks |
+| `platform.drop` | false | Allow dropping items |
+
+### LuckPerms examples
+
+```
+# Give a rank the ability to break/place/drop
+/lp group builder permission set platform.break true
+/lp group builder permission set platform.place true
+/lp group builder permission set platform.drop true
+
+# Give a rank full bypass
+/lp group admin permission set platform.bypass true
+```
 
 ## Cosmetic Kit
 

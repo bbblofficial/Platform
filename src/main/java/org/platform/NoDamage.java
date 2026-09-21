@@ -25,25 +25,17 @@ public class NoDamage implements Listener {
         this.plugin = plugin;
     }
 
-    // ============================================================
-    //  Cancel ALL damage to players (except void)
-    // ============================================================
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onAnyDamage(EntityDamageEvent event) {
         if (!(event.getEntity() instanceof Player)) return;
 
         EntityDamageEvent.DamageCause cause = event.getCause();
-
-        // Let void handle itself (spawn teleport / void kill logic)
         if (cause == EntityDamageEvent.DamageCause.VOID) return;
 
         event.setCancelled(true);
         event.setDamage(0);
     }
 
-    // ============================================================
-    //  Explicit Fall Damage blocker (extra safety net)
-    // ============================================================
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onFallDamage(EntityDamageEvent event) {
         if (!(event.getEntity() instanceof Player)) return;
@@ -53,9 +45,6 @@ public class NoDamage implements Listener {
         }
     }
 
-    // ============================================================
-    //  Extra safety: cancel direct PvP damage at MONITOR too
-    // ============================================================
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         if (!(event.getEntity() instanceof Player)) return;
@@ -63,9 +52,6 @@ public class NoDamage implements Listener {
         event.setDamage(0);
     }
 
-    // ============================================================
-    //  Infinite Food - players never get hungry
-    // ============================================================
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onFoodChange(FoodLevelChangeEvent event) {
         if (!(event.getEntity() instanceof Player)) return;

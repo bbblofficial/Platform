@@ -19,14 +19,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * Unstable Connection checker.
- * Kicks players whose ping stays above the threshold for too long.
- *
- * Commands (via /platform cc):
- *   on | off | toggle
- *   bypass <player>
- *   unbypass <player>
- *   forceaddping <player> <ping>
- *   ping <player> default
  */
 public class UnstableConnection implements Listener {
 
@@ -209,7 +201,6 @@ public class UnstableConnection implements Listener {
         UUID id = event.getPlayer().getUniqueId();
         this.highPingSince.remove(id);
         this.lastWarnTime.remove(id);
-        // forced ping persists across relogs on purpose
     }
 
     public boolean isEnabled() {
