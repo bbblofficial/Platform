@@ -1,0 +1,24 @@
+name: Platform
+version: 1.0
+main: org.platform.Platform
+author: Muvixo
+description: Simple cosmetic PvP platform plugin
+commands:
+  platform:
+    description: Main Platform command
+    usage: /platform <kit|setspawn|creator|cc|reload|help>
+    aliases:
+      - pf
+permissions:
+  platform.kit:
+    description: Allows giving the cosmetic kit
+    default: op
+  platform.setspawn:
+    description: Allows setting the spawn point
+    default: op
+  platform.connection:
+    description: Allows managing the connection check
+    default: op
+  platform.reload:
+    description: Allows reloading the config
+    default: op

@@ -1,0 +1,37 @@
+# ==========================================================
+#  Platform Configuration
+#  Version: 1.0
+#  Simple cosmetic PvP plugin
+# ==========================================================
+#
+#  This file is AUTO-MERGED on plugin update.
+#  New keys are added automatically.
+#  Your existing values are NEVER overwritten.
+# ==========================================================
+
+# ----------------------------------------------------------
+#  Spawn
+#  Set with /platform setspawn
+# ----------------------------------------------------------
+spawn:
+  world: world
+  x: 0.5
+  y: 100.0
+  z: 0.5
+  yaw: 0.0
+  pitch: 0.0
+
+# ----------------------------------------------------------
+#  Connection Check (Anti-Lag / High Ping Kick)
+#  Kicks players whose ping stays above threshold for too long
+# ----------------------------------------------------------
+connection-check:
+  enabled: true
+  ping-threshold: 150
+  check-interval: 20
+  grace-seconds: 30
+  warn-cooldown: 5
+  kick-message: |-
+    &cUnstable connection
+    &fYour ping is too high: &e%ping%ms&7/&e%max%ms
+  broadcast-message: '&c%player% &7was kicked for &eUnstable Connection &7(&c%ping%ms&7)'
