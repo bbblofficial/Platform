@@ -11,10 +11,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * Cosmetic PvP rules:
- *   - NO health is ever lost (all damage cancelled, except void)
- *   - Fall damage is always off
- *   - PvP damage is always off (but knockback still applies)
- *   - Infinite food - players never get hungry
+ *   - PvP is fully functional (hits register, knockback works)
+ *   - But HP is never lost — damage is set to 0, not cancelled
+ *   - Fall damage is fully off
+ *   - Infinite food — players never get hungry
  */
 public class NoDamage implements Listener {
 
@@ -25,17 +25,41 @@ public class NoDamage implements Listener {
         this.plugin = plugin;
     }
 
+    // ============================================================
+    //  MAIN: Zero out all damage to players (except void)
+    //  We use setDamage(0) instead of setCancelled(true) so that:
+    //    - Knockback still happens
+    //    - Hit sounds + animation still play
+    //    - PvP feels fully real, just no HP loss
+    // ============================================================
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onAnyDamage(EntityDamageEvent event) {
         if (!(event.getEntity() instanceof Player)) return;
 
         EntityDamageEvent.DamageCause cause = event.getCause();
+
+        // Let void handle itself (spawn teleport / void kill logic)
         if (cause == EntityDamageEvent.DamageCause.VOID) return;
 
-        event.setCancelled(true);
+        // Zero out the damage — keep the event alive for knockback
         event.setDamage(0);
     }
 
+    // ============================================================
+    //  PvP damage — zero out, keep knockback
+    //  Runs at MONITOR so we're the very last to touch it.
+    // ============================================================
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
+    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+        if (!(event.getEntity() instanceof Player)) return;
+        if (!event.isCancelled()) {
+            event.setDamage(0);
+        }
+    }
+
+    // ============================================================
+    //  Fall damage — fully disabled
+    // ============================================================
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onFallDamage(EntityDamageEvent event) {
         if (!(event.getEntity() instanceof Player)) return;
@@ -45,13 +69,9 @@ public class NoDamage implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
-    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if (!(event.getEntity() instanceof Player)) return;
-        event.setCancelled(true);
-        event.setDamage(0);
-    }
-
+    // ============================================================
+    //  Infinite Food — players never get hungry
+    // ============================================================
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onFoodChange(FoodLevelChangeEvent event) {
         if (!(event.getEntity() instanceof Player)) return;
