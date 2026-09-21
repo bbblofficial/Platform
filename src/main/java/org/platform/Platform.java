@@ -32,6 +32,7 @@ public final class Platform extends JavaPlugin {
         getServer().getPluginManager().registerEvents(this.playerJoin, this);
         getServer().getPluginManager().registerEvents(new NoDamage(this), this);
         getServer().getPluginManager().registerEvents(new Protection(this), this);
+        getServer().getPluginManager().registerEvents(new KitRestore(this, this.playerJoin), this);
 
         // ---- unstable connection ----
         this.unstableConnection = new UnstableConnection(this);
@@ -92,7 +93,7 @@ public final class Platform extends JavaPlugin {
         setIfMissing(cfg, "connection-check.grace-seconds", Integer.valueOf(30));
         setIfMissing(cfg, "connection-check.warn-cooldown", Integer.valueOf(5));
         setIfMissing(cfg, "connection-check.kick-message",
-                "&cUnstable connection\n&fYour ping is too high: &e%ping%ms&7/&e%max%ms");
+                "&cUnstable connection\\n&fYour ping is too high: &e%ping%ms&7/&e%max%ms");
         setIfMissing(cfg, "connection-check.broadcast-message",
                 "&c%player% &7was kicked for &eUnstable Connection &7(&c%ping%ms&7)");
 
