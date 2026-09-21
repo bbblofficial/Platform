@@ -7,13 +7,15 @@ Platform plugin for **Minecraft 1.8.8** — CarbonSpigot compatible.
 ## What's New in v1.0
 
 - **Cosmetic Kit** — Leather Red + Iron armor, Protection III, Unbreakable
-- **No Damage** — Players are invincible, no HP is ever lost
+- **PvP Enabled, No Damage** — PvP feels real (hits + knockback), but HP never drops
 - **No Fall Damage** — Players never take fall damage
 - **Infinite Food** — Players never get hungry
 - **Protection** — Players can't break/place blocks or drop items (permission-based)
+- **Auto Kit Restore** — Kit comes back after `/clear`
+- **Scoreboard** — Animated title, placeholders, per-world support
 - **Unstable Connection** — Kicks high-ping players with full command set
 - **Spawn System** — Set once, players teleport there on join / respawn
-- **Safe config updates** — New options are merged into config.yml without wiping your settings
+- **Safe config updates** — New options are merged into YAML files without wiping your settings
 
 ## Commands
 
@@ -23,6 +25,8 @@ Platform plugin for **Minecraft 1.8.8** — CarbonSpigot compatible.
 | `/platform creator` | Show credits |
 | `/platform kit [player]` | Give the cosmetic kit |
 | `/platform setspawn` | Set the spawn point |
+| `/platform sb` | Toggle scoreboard |
+| `/platform sb reload` | Reload scoreboard.yml |
 | `/platform reload` | Reload config |
 | `/platform cc` | Connection check status |
 | `/platform cc on\|off\|toggle` | Toggle connection check |
@@ -43,6 +47,7 @@ Aliases: `/pf`
 | `platform.setspawn` | op | Set the spawn point |
 | `platform.connection` | op | Manage the connection check |
 | `platform.reload` | op | Reload the config |
+| `platform.scoreboard.toggle` | true | Toggle the scoreboard |
 
 ### Protection
 
@@ -94,7 +99,7 @@ The output JAR will be at `target/Platform.jar`.
 
 ### GitHub Actions
 
-Push to `main` or `master` → the workflow automatically builds the plugin
+Push to `main` or `master` -> the workflow automatically builds the plugin
 and uploads `Platform-JAR` as an artifact. Tag a commit (e.g. `git tag v1.0 && git push --tags`)
 to also publish a GitHub Release with the JAR attached.
 

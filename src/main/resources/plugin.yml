@@ -6,7 +6,7 @@ description: Simple cosmetic PvP platform plugin
 commands:
   platform:
     description: Main Platform command
-    usage: /platform <kit|setspawn|creator|cc|reload|help>
+    usage: /platform <kit|setspawn|creator|cc|sb|reload|help>
     aliases:
       - pf
 permissions:
@@ -22,6 +22,9 @@ permissions:
   platform.reload:
     description: Allows reloading the config
     default: op
+  platform.scoreboard.toggle:
+    description: Allows toggling the scoreboard
+    default: true
 
   # ---- Protection ----
   platform.bypass:

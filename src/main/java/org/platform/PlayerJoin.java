@@ -79,7 +79,6 @@ public class PlayerJoin implements Listener {
         sword.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 1);
         player.getInventory().setItem(0, unbreakable(sword));
 
-        // keep hunger full
         player.setFoodLevel(20);
         player.setSaturation(20.0F);
         player.setExhaustion(0.0F);
@@ -87,9 +86,6 @@ public class PlayerJoin implements Listener {
         player.updateInventory();
     }
 
-    /**
-     * Leather armor piece with pure-red dye (16711680), Protection III, Unbreakable.
-     */
     private ItemStack dyedLeather(Material mat) {
         ItemStack item = new ItemStack(mat);
         LeatherArmorMeta meta = (LeatherArmorMeta) item.getItemMeta();
@@ -100,9 +96,6 @@ public class PlayerJoin implements Listener {
         return item;
     }
 
-    /**
-     * Iron armor piece with Protection III, Unbreakable.
-     */
     private ItemStack protectionIron(Material mat) {
         ItemStack item = new ItemStack(mat);
         ItemMeta meta = item.getItemMeta();

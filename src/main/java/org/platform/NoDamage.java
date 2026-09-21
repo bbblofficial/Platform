@@ -12,9 +12,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 /**
  * Cosmetic PvP rules:
  *   - PvP is fully functional (hits register, knockback works)
- *   - But HP is never lost — damage is set to 0, not cancelled
+ *   - But HP is never lost - damage is set to 0, not cancelled
  *   - Fall damage is fully off
- *   - Infinite food — players never get hungry
+ *   - Infinite food - players never get hungry
  */
 public class NoDamage implements Listener {
 
@@ -37,17 +37,13 @@ public class NoDamage implements Listener {
         if (!(event.getEntity() instanceof Player)) return;
 
         EntityDamageEvent.DamageCause cause = event.getCause();
-
-        // Let void handle itself (spawn teleport / void kill logic)
         if (cause == EntityDamageEvent.DamageCause.VOID) return;
 
-        // Zero out the damage — keep the event alive for knockback
         event.setDamage(0);
     }
 
     // ============================================================
-    //  PvP damage — zero out, keep knockback
-    //  Runs at MONITOR so we're the very last to touch it.
+    //  PvP damage - zero out, keep knockback
     // ============================================================
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
@@ -58,7 +54,7 @@ public class NoDamage implements Listener {
     }
 
     // ============================================================
-    //  Fall damage — fully disabled
+    //  Fall damage - fully disabled
     // ============================================================
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onFallDamage(EntityDamageEvent event) {
@@ -70,7 +66,7 @@ public class NoDamage implements Listener {
     }
 
     // ============================================================
-    //  Infinite Food — players never get hungry
+    //  Infinite Food - players never get hungry
     // ============================================================
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onFoodChange(FoodLevelChangeEvent event) {

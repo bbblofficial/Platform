@@ -26,21 +26,14 @@ public class KitRestore implements Listener {
         this.playerJoin = playerJoin;
     }
 
-    // ============================================================
-    //  Detect /clear commands
-    // ============================================================
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onCommand(PlayerCommandPreprocessEvent event) {
         String raw = event.getMessage().toLowerCase();
-
-        // strip leading slash
         if (raw.startsWith("/")) raw = raw.substring(1);
 
-        // Get the command name (first word)
         String[] parts = raw.split(" ");
         String cmd = parts[0];
 
-        // Detect /clear  or  /minecraft:clear  or  /essentials:clear
         boolean isClear = cmd.equals("clear")
                 || cmd.endsWith(":clear")
                 || cmd.equals("minecraft:clear");
@@ -49,14 +42,11 @@ public class KitRestore implements Listener {
 
         final Player player = event.getPlayer();
 
-        // Restore on the next tick (so /clear has time to finish)
         Bukkit.getScheduler().scheduleSyncDelayedTask(this.plugin, new Runnable() {
             @Override
             public void run() {
                 if (!player.isOnline()) return;
                 if (player.getGameMode() == GameMode.CREATIVE) return;
-
-                // Only restore if their inventory is actually empty
                 if (!isEmpty(player)) return;
 
                 playerJoin.giveKit(player);
@@ -65,9 +55,6 @@ public class KitRestore implements Listener {
         }, 3L);
     }
 
-    // ============================================================
-    //  Helper — check if inventory is empty
-    // ============================================================
     private boolean isEmpty(Player player) {
         if (player.getInventory().getHelmet() != null) return false;
         if (player.getInventory().getChestplate() != null) return false;

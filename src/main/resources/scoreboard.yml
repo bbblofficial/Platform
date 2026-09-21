@@ -1,0 +1,90 @@
+# ==========================================================
+#  Platform Scoreboard Configuration
+#  Version: 1.0  |  Compatible: 1.8.8
+# ==========================================================
+#
+#  This file is AUTO-MERGED on plugin update.
+#  New keys are added automatically.
+#  Your existing lines are NEVER overwritten.
+# ==========================================================
+
+enabled: true
+update-interval: 10
+join-delay: 5
+
+# ----------------------------------------------------------
+#  Title Animation
+# ----------------------------------------------------------
+title:
+  animated: true
+  static: '&6Platform'
+  frames:
+    - '&6P&flatform'
+    - '&6Pl&fatForm'
+    - '&6Pla&ftform'
+    - '&6Plat&fform'
+    - '&6Platf&form'
+    - '&6Platfo&frm'
+    - '&6Platfor&fm'
+    - '&6Platform'
+
+# ----------------------------------------------------------
+#  Scoreboard Lines
+#  Available placeholders:
+#    %player%       - player name
+#    %online%       - online players
+#    %max_online%   - max players
+#    %world%        - world name
+#    %ping%         - ping (ms)
+#    %health%       - health (int)
+#    %food%         - food level
+#    %y%            - Y coordinate
+# ----------------------------------------------------------
+lines:
+  - '&8&m----------------'
+  - '&6Player &8» &f%player%'
+  - '&6World  &8» &f%world%'
+  - '&6Ping   &8» &f%ping%ms'
+  - '&6Health &8» &f%health%'
+  - '&6Food   &8» &f%food%'
+  - '&6Y      &8» &f%y%'
+  - '&8&m----------------'
+  - '&6Online &8» &f%online%&7/&f%max_online%'
+  - '&8&m----------------'
+  - '&6Play.MineStorm.iR'
+  - '&8&m----------------'
+
+# ----------------------------------------------------------
+#  Per-World Scoreboards
+# ----------------------------------------------------------
+per-world:
+  enabled: false
+  worlds:
+    world:
+      - '&8&m----------------'
+      - '&6OVERWORLD'
+      - '&8&m----------------'
+      - '&6Player &8» &f%player%'
+      - '&6Ping   &8» &f%ping%ms'
+      - '&8&m----------------'
+      - '&6Online &8» &f%online%'
+      - '&8&m----------------'
+      - '&6Play.MineStorm.iR'
+      - '&8&m----------------'
+    world_nether:
+      - '&8&m----------------'
+      - '&6NETHER'
+      - '&8&m----------------'
+      - '&6Player &8» &f%player%'
+      - '&6Ping   &8» &f%ping%ms'
+      - '&8&m----------------'
+      - '&6Online &8» &f%online%'
+      - '&8&m----------------'
+      - '&6Play.MineStorm.iR'
+      - '&8&m----------------'
+
+# ----------------------------------------------------------
+#  Toggle
+# ----------------------------------------------------------
+allow-toggle: true
+toggle-permission: 'platform.scoreboard.toggle'

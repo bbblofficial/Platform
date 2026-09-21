@@ -37,9 +37,6 @@ public class Protection implements Listener {
         return player.hasPermission(PERM_BYPASS);
     }
 
-    // ============================================================
-    //  Block Break Protection
-    // ============================================================
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
@@ -50,9 +47,6 @@ public class Protection implements Listener {
         player.sendMessage(colorize("&cYou cannot break blocks here!"));
     }
 
-    // ============================================================
-    //  Block Place Protection
-    // ============================================================
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
         Player player = event.getPlayer();
@@ -63,9 +57,6 @@ public class Protection implements Listener {
         player.sendMessage(colorize("&cYou cannot place blocks here!"));
     }
 
-    // ============================================================
-    //  Item Drop Protection
-    // ============================================================
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onDrop(PlayerDropItemEvent event) {
         Player player = event.getPlayer();

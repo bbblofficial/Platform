@@ -13,6 +13,7 @@ public final class Platform extends JavaPlugin {
 
     private UnstableConnection unstableConnection;
     private PlayerJoin playerJoin;
+    private ScoreboardManager scoreboardManager;
 
     @Override
     public void onEnable() {
@@ -37,8 +38,12 @@ public final class Platform extends JavaPlugin {
         // ---- unstable connection ----
         this.unstableConnection = new UnstableConnection(this);
 
+        // ---- scoreboard ----
+        this.scoreboardManager = new ScoreboardManager(this);
+
         // ---- command ----
-        PlatformCommand cmd = new PlatformCommand(this, this.unstableConnection, this.playerJoin);
+        PlatformCommand cmd = new PlatformCommand(this, this.unstableConnection,
+                this.playerJoin, this.scoreboardManager);
         getCommand("platform").setExecutor(cmd);
         getCommand("platform").setTabCompleter(cmd);
 
@@ -50,6 +55,9 @@ public final class Platform extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (this.scoreboardManager != null) {
+            this.scoreboardManager.shutdown();
+        }
         getLogger().info("Platform disabled.");
     }
 
@@ -78,7 +86,6 @@ public final class Platform extends JavaPlugin {
             cfg.setDefaults(defaults);
         }
 
-        // ---- spawn ----
         setIfMissing(cfg, "spawn.world", "world");
         setIfMissing(cfg, "spawn.x", Double.valueOf(0.5D));
         setIfMissing(cfg, "spawn.y", Double.valueOf(100.0D));
@@ -86,14 +93,13 @@ public final class Platform extends JavaPlugin {
         setIfMissing(cfg, "spawn.yaw", Float.valueOf(0.0F));
         setIfMissing(cfg, "spawn.pitch", Float.valueOf(0.0F));
 
-        // ---- connection check ----
         setIfMissing(cfg, "connection-check.enabled", Boolean.valueOf(true));
         setIfMissing(cfg, "connection-check.ping-threshold", Integer.valueOf(150));
         setIfMissing(cfg, "connection-check.check-interval", Integer.valueOf(20));
         setIfMissing(cfg, "connection-check.grace-seconds", Integer.valueOf(30));
         setIfMissing(cfg, "connection-check.warn-cooldown", Integer.valueOf(5));
         setIfMissing(cfg, "connection-check.kick-message",
-                "&cUnstable connection\\n&fYour ping is too high: &e%ping%ms&7/&e%max%ms");
+                "&cUnstable connection\n&fYour ping is too high: &e%ping%ms&7/&e%max%ms");
         setIfMissing(cfg, "connection-check.broadcast-message",
                 "&c%player% &7was kicked for &eUnstable Connection &7(&c%ping%ms&7)");
 
@@ -121,5 +127,9 @@ public final class Platform extends JavaPlugin {
 
     public PlayerJoin getPlayerJoin() {
         return this.playerJoin;
+    }
+
+    public ScoreboardManager getScoreboardManager() {
+        return this.scoreboardManager;
     }
 }

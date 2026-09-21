@@ -18,11 +18,14 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
     private final JavaPlugin plugin;
     private final UnstableConnection connection;
     private final PlayerJoin playerJoin;
+    private final ScoreboardManager scoreboardManager;
 
-    public PlatformCommand(JavaPlugin plugin, UnstableConnection connection, PlayerJoin playerJoin) {
+    public PlatformCommand(JavaPlugin plugin, UnstableConnection connection,
+                           PlayerJoin playerJoin, ScoreboardManager scoreboardManager) {
         this.plugin = plugin;
         this.connection = connection;
         this.playerJoin = playerJoin;
+        this.scoreboardManager = scoreboardManager;
     }
 
     @Override
@@ -63,6 +66,14 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
             return handleConnection(sender, args);
         }
 
+        if (sub.equals("sb") || sub.equals("scoreboard")) {
+            if (!sender.hasPermission("platform.scoreboard.toggle")) {
+                sendNoPerm(sender);
+                return true;
+            }
+            return handleScoreboard(sender, args);
+        }
+
         if (sub.equals("reload")) {
             if (!sender.hasPermission("platform.reload")) {
                 sendNoPerm(sender);
@@ -70,6 +81,9 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
             }
             this.plugin.reloadConfig();
             this.connection.reloadConfig();
+            if (this.scoreboardManager != null) {
+                this.scoreboardManager.reloadConfig();
+            }
             sender.sendMessage(colorize("&aPlatform configuration reloaded."));
             return true;
         }
@@ -147,6 +161,41 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(colorize("&6&lPlatform &7- &fCreated by &bMuvixo"));
         sender.sendMessage(colorize("&7Version: &f1.0"));
         sender.sendMessage(colorize("&8&m----------------------------------"));
+        return true;
+    }
+
+    private boolean handleScoreboard(CommandSender sender, String[] args) {
+        if (!(sender instanceof Player)) {
+            sender.sendMessage(colorize("&cOnly players can use the scoreboard command."));
+            return true;
+        }
+        Player player = (Player) sender;
+
+        if (args.length >= 2 && args[1].equalsIgnoreCase("reload")) {
+            if (!sender.hasPermission("platform.reload")) {
+                sendNoPerm(sender);
+                return true;
+            }
+            if (this.scoreboardManager == null) {
+                player.sendMessage(colorize("&cError: ScoreboardManager not found."));
+                return true;
+            }
+            this.scoreboardManager.reloadConfig();
+            player.sendMessage(colorize("&aScoreboard configuration reloaded."));
+            return true;
+        }
+
+        if (this.scoreboardManager == null) {
+            player.sendMessage(colorize("&cError: ScoreboardManager not found."));
+            return true;
+        }
+
+        boolean nowVisible = this.scoreboardManager.toggleScoreboard(player);
+        if (nowVisible) {
+            player.sendMessage(colorize("&aScoreboard &lENABLED&a."));
+        } else {
+            player.sendMessage(colorize("&cScoreboard &lDISABLED&c."));
+        }
         return true;
     }
 
@@ -315,6 +364,10 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage(colorize("&e/platform setspawn &7- Set the spawn point"));
         }
 
+        if (sender.hasPermission("platform.scoreboard.toggle")) {
+            sender.sendMessage(colorize("&e/platform sb &7- Toggle scoreboard visibility"));
+        }
+
         if (sender.hasPermission("platform.connection")) {
             sender.sendMessage(colorize("&e/platform cc &7- Connection check status"));
             sender.sendMessage(colorize("&e/platform cc on|off|toggle &7- Toggle connection check"));
@@ -326,6 +379,7 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
 
         if (sender.hasPermission("platform.reload")) {
             sender.sendMessage(colorize("&e/platform reload &7- Reload configuration"));
+            sender.sendMessage(colorize("&e/platform sb reload &7- Reload scoreboard.yml"));
         }
 
         sender.sendMessage(colorize("&8&m----------------------------------"));
@@ -342,6 +396,7 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
             if (sender.hasPermission("platform.kit")) subs.add("kit");
             if (sender.hasPermission("platform.setspawn")) subs.add("setspawn");
             if (sender.hasPermission("platform.connection")) subs.add("cc");
+            if (sender.hasPermission("platform.scoreboard.toggle")) subs.add("sb");
             if (sender.hasPermission("platform.reload")) subs.add("reload");
 
             String partial = args[0].toLowerCase();
@@ -357,6 +412,13 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
                 if (p.getName().toLowerCase().startsWith(partial)) {
                     out.add(p.getName());
                 }
+            }
+            return out;
+        }
+
+        if (args.length == 2 && (args[0].equalsIgnoreCase("sb") || args[0].equalsIgnoreCase("scoreboard"))) {
+            if (sender.hasPermission("platform.reload")) {
+                out.add("reload");
             }
             return out;
         }
