@@ -24,9 +24,10 @@ import org.bukkit.scheduler.BukkitRunnable;
  *
  * Every time a player hits an opponent, their combo counter goes up by 1.
  * If the player doesn't land a hit for X seconds, their combo resets.
- * If the player takes a hit, the opponent's combo resets.
+ * If the player takes a hit, their own combo resets.
  *
- * At specific combo milestones (e.g. 10, 20, 30...) a broadcast is sent.
+ * At specific combo milestones (e.g. 10, 20, 30...) a broadcast is sent
+ * with a pleasant sound effect.
  */
 public class ComboSystem implements Listener {
 
@@ -136,14 +137,37 @@ public class ComboSystem implements Listener {
             }
         }
 
-        // Sounds
+        // Pleasant combo sounds (no dragon growl)
         if (this.soundEnabled) {
-            for (Player p : Bukkit.getOnlinePlayers()) {
-                if (combo >= this.comboStep * 2) {
-                    p.playSound(p.getLocation(), Sound.ENDERDRAGON_GROWL, 0.8F, 1.2F);
-                } else {
-                    p.playSound(p.getLocation(), Sound.LEVEL_UP, 1.0F, 1.5F);
-                }
+            playComboSound(combo);
+        }
+    }
+
+    // ============================================================
+    //  PLEASANT COMBO SOUNDS
+    // ============================================================
+    private void playComboSound(int combo) {
+        for (Player p : Bukkit.getOnlinePlayers()) {
+
+            // 50x+ — grand celebration (twinkle + chime + level up)
+            if (combo >= this.comboStep * 5) {
+                p.playSound(p.getLocation(), Sound.FIREWORK_TWINKLE,  0.7F, 1.4F);
+                p.playSound(p.getLocation(), Sound.ORB_PICKUP,        0.9F, 1.6F);
+                p.playSound(p.getLocation(), Sound.LEVEL_UP,          1.0F, 1.5F);
+            }
+            // 30x+ — big success (level up + chime)
+            else if (combo >= this.comboStep * 3) {
+                p.playSound(p.getLocation(), Sound.LEVEL_UP,          0.9F, 1.5F);
+                p.playSound(p.getLocation(), Sound.ORB_PICKUP,        0.8F, 1.4F);
+            }
+            // 20x — solid hit + chime
+            else if (combo >= this.comboStep * 2) {
+                p.playSound(p.getLocation(), Sound.SUCCESSFUL_HIT,    0.7F, 1.2F);
+                p.playSound(p.getLocation(), Sound.ORB_PICKUP,        0.8F, 0.9F);
+            }
+            // 10x — gentle chime
+            else {
+                p.playSound(p.getLocation(), Sound.ORB_PICKUP,        0.7F, 1.2F);
             }
         }
     }

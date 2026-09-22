@@ -121,12 +121,12 @@ public final class Platform extends JavaPlugin {
         setIfMissing(cfg, "combo.enabled", Boolean.valueOf(true));
         setIfMissing(cfg, "combo.step", Integer.valueOf(10));
         setIfMissing(cfg, "combo.reset-time", Integer.valueOf(3000));
+        setIfMissing(cfg, "combo.sound-enabled", Boolean.valueOf(true));
         setIfMissing(cfg, "combo.broadcast-message",
                 "&8&m-------------------------------\\n"
               + "&6&l⚔ COMBO &e&l%combo%x\\n"
               + "&e%attacker% &7got a combo on &c%victim% &7(&6%combo% &7combo)\\n"
               + "&8&m-------------------------------");
-        setIfMissing(cfg, "combo.sound-enabled", Boolean.valueOf(true));
 
         try {
             cfg.save(configFile);

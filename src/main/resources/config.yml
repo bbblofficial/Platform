@@ -45,3 +45,23 @@ connection-check:
 # ----------------------------------------------------------
 join-message: '&b%player% &7joined the game &8(&b%online%&7/&b%max_online%&8)'
 quit-message: '&b%player% &7left the game &8(&b%online%&7/&b%max_online%&8)'
+
+# ----------------------------------------------------------
+#  Combo System
+#  Broadcasts a message when a player reaches a combo milestone.
+#
+#  Placeholders:
+#    %combo%     - the combo count (e.g. 10, 20, 30)
+#    %attacker%  - the player who landed the combo
+#    %victim%    - the player who got comboed
+#
+#  NOTE: Use "\n" inside double quotes for a new line.
+#        Do NOT use block scalars (| or |-) for multi-line
+#        messages, because "\n" will be treated as raw text.
+# ----------------------------------------------------------
+combo:
+  enabled: true
+  step: 10
+  reset-time: 3000
+  sound-enabled: true
+  broadcast-message: "&8&m-------------------------------\n&6&l⚔ COMBO &e&l%combo%x\n&e%attacker% &7got a combo on &c%victim% &7(&6%combo% &7combo)\n&8&m-------------------------------"
