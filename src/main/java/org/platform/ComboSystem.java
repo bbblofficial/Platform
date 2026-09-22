@@ -69,6 +69,11 @@ public class ComboSystem implements Listener {
         if (this.comboStep < 1) this.comboStep = 10;
         if (this.comboResetTime < 500L) this.comboResetTime = 3000L;
 
+        // Convert literal "\n" (from YAML block scalars) into real newlines
+        if (this.broadcastMessage != null) {
+            this.broadcastMessage = this.broadcastMessage.replace("\\n", "\n");
+        }
+
         this.plugin.getLogger().info("Platform combo system loaded: "
                 + (this.enabled ? "ENABLED (step " + this.comboStep + ")" : "DISABLED"));
     }
@@ -114,17 +119,24 @@ public class ComboSystem implements Listener {
     //  ANNOUNCE COMBO
     // ============================================================
     private void announceCombo(Player attacker, Player victim, int combo) {
-        String message = colorize(
-                this.broadcastMessage
-                        .replace("%combo%", String.valueOf(combo))
-                        .replace("%attacker%", attacker.getName())
-                        .replace("%victim%", victim.getName())
-        );
+        // Build the raw message
+        String raw = this.broadcastMessage
+                .replace("%combo%", String.valueOf(combo))
+                .replace("%attacker%", attacker.getName())
+                .replace("%victim%", victim.getName());
 
+        // Colorize first
+        String colored = colorize(raw);
+
+        // Send line by line (newlines don't work in a single sendMessage call)
+        String[] lines = colored.split("\\r?\\n");
         for (Player p : Bukkit.getOnlinePlayers()) {
-            p.sendMessage(message);
+            for (String line : lines) {
+                p.sendMessage(line);
+            }
         }
 
+        // Sounds
         if (this.soundEnabled) {
             for (Player p : Bukkit.getOnlinePlayers()) {
                 if (combo >= this.comboStep * 2) {
