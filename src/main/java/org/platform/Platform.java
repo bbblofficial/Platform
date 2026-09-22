@@ -14,6 +14,7 @@ public final class Platform extends JavaPlugin {
     private UnstableConnection unstableConnection;
     private PlayerJoin playerJoin;
     private ScoreboardManager scoreboardManager;
+    private ComboSystem comboSystem;
 
     @Override
     public void onEnable() {
@@ -35,6 +36,10 @@ public final class Platform extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new Protection(this), this);
         getServer().getPluginManager().registerEvents(new KitRestore(this, this.playerJoin), this);
         getServer().getPluginManager().registerEvents(new Welcome(this), this);
+
+        // ---- combo system ----
+        this.comboSystem = new ComboSystem(this);
+        getServer().getPluginManager().registerEvents(this.comboSystem, this);
 
         // ---- unstable connection ----
         this.unstableConnection = new UnstableConnection(this);
@@ -112,6 +117,17 @@ public final class Platform extends JavaPlugin {
         setIfMissing(cfg, "quit-message",
                 "&b%player% &7left the game &8(&b%online%&7/&b%max_online%&8)");
 
+        // ---- combo system ----
+        setIfMissing(cfg, "combo.enabled", Boolean.valueOf(true));
+        setIfMissing(cfg, "combo.step", Integer.valueOf(10));
+        setIfMissing(cfg, "combo.reset-time", Integer.valueOf(3000));
+        setIfMissing(cfg, "combo.broadcast-message",
+                "&8&m-------------------------------\\n"
+              + "&6&l⚔ COMBO &e&l%combo%x\\n"
+              + "&e%attacker% &7got a combo on &c%victim% &7(&6%combo% &7combo)\\n"
+              + "&8&m-------------------------------");
+        setIfMissing(cfg, "combo.sound-enabled", Boolean.valueOf(true));
+
         try {
             cfg.save(configFile);
             if (isNew) {
@@ -140,5 +156,9 @@ public final class Platform extends JavaPlugin {
 
     public ScoreboardManager getScoreboardManager() {
         return this.scoreboardManager;
+    }
+
+    public ComboSystem getComboSystem() {
+        return this.comboSystem;
     }
 }
