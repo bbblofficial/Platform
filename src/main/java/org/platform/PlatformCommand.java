@@ -19,15 +19,21 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
     private final UnstableConnection connection;
     private final PlayerJoin playerJoin;
     private final ScoreboardManager scoreboardManager;
+    private final Void voidSystem;
 
     public PlatformCommand(JavaPlugin plugin, UnstableConnection connection,
-                           PlayerJoin playerJoin, ScoreboardManager scoreboardManager) {
+                           PlayerJoin playerJoin, ScoreboardManager scoreboardManager,
+                           Void voidSystem) {
         this.plugin = plugin;
         this.connection = connection;
         this.playerJoin = playerJoin;
         this.scoreboardManager = scoreboardManager;
+        this.voidSystem = voidSystem;
     }
 
+    // ============================================================
+    //  onCommand
+    // ============================================================
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
@@ -38,6 +44,7 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
 
         String sub = args[0].toLowerCase();
 
+        // ---------- /platform setspawn ----------
         if (sub.equals("setspawn")) {
             if (!sender.hasPermission("platform.setspawn")) {
                 sendNoPerm(sender);
@@ -46,6 +53,16 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
             return handleSetSpawn(sender);
         }
 
+        // ---------- /platform setvoid [y] ----------
+        if (sub.equals("setvoid")) {
+            if (!sender.hasPermission("platform.setvoid")) {
+                sendNoPerm(sender);
+                return true;
+            }
+            return handleSetVoid(sender, args);
+        }
+
+        // ---------- /platform kit [player] ----------
         if (sub.equals("kit")) {
             if (!sender.hasPermission("platform.kit")) {
                 sendNoPerm(sender);
@@ -54,10 +71,12 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
             return handleKit(sender, args);
         }
 
+        // ---------- /platform creator ----------
         if (sub.equals("creator")) {
             return handleCreator(sender);
         }
 
+        // ---------- /platform cc ... ----------
         if (sub.equals("cc") || sub.equals("connectioncheck")) {
             if (!sender.hasPermission("platform.connection")) {
                 sendNoPerm(sender);
@@ -66,6 +85,7 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
             return handleConnection(sender, args);
         }
 
+        // ---------- /platform sb ... ----------
         if (sub.equals("sb") || sub.equals("scoreboard")) {
             if (!sender.hasPermission("platform.scoreboard.toggle")) {
                 sendNoPerm(sender);
@@ -74,6 +94,7 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
             return handleScoreboard(sender, args);
         }
 
+        // ---------- /platform reload ----------
         if (sub.equals("reload")) {
             if (!sender.hasPermission("platform.reload")) {
                 sendNoPerm(sender);
@@ -84,11 +105,8 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
             if (this.scoreboardManager != null) {
                 this.scoreboardManager.reloadConfig();
             }
-            if (this.plugin instanceof Platform) {
-                Platform pl = (Platform) this.plugin;
-                if (pl.getComboSystem() != null) {
-                    pl.getComboSystem().reloadConfig();
-                }
+            if (this.voidSystem != null) {
+                this.voidSystem.reloadConfig();
             }
             sender.sendMessage(colorize("&aPlatform configuration reloaded."));
             return true;
@@ -104,7 +122,7 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
     }
 
     // ============================================================
-    //  SETSPAWN
+    //  /platform setspawn
     // ============================================================
     private boolean handleSetSpawn(CommandSender sender) {
         if (!(sender instanceof Player)) {
@@ -133,7 +151,45 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
     }
 
     // ============================================================
-    //  KIT
+    //  /platform setvoid [y]
+    // ============================================================
+    private boolean handleSetVoid(CommandSender sender, String[] args) {
+        if (this.voidSystem == null) {
+            sender.sendMessage(colorize("&cError: Void system not found."));
+            return true;
+        }
+
+        double y;
+
+        if (args.length >= 2) {
+            // /platform setvoid <y>
+            try {
+                y = Double.parseDouble(args[1]);
+            } catch (NumberFormatException e) {
+                sender.sendMessage(colorize("&cInvalid number: &e" + args[1]));
+                sender.sendMessage(colorize("&7Usage: &e/platform setvoid [y]"));
+                return true;
+            }
+        } else {
+            // /platform setvoid  (use sender's current Y)
+            if (!(sender instanceof Player)) {
+                sender.sendMessage(colorize("&cYou must be a player to use setvoid without a value."));
+                sender.sendMessage(colorize("&7From console: &e/platform setvoid <y>"));
+                return true;
+            }
+            Player player = (Player) sender;
+            y = player.getLocation().getY();
+        }
+
+        this.voidSystem.setKillHeight(y);
+        this.voidSystem.reloadConfig();
+
+        sender.sendMessage(colorize("&aVoid kill height set to &e" + y + " &a(Y level)."));
+        return true;
+    }
+
+    // ============================================================
+    //  /platform kit [player]
     // ============================================================
     private boolean handleKit(CommandSender sender, String[] args) {
         Player target;
@@ -169,7 +225,7 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
     }
 
     // ============================================================
-    //  CREATOR
+    //  /platform creator
     // ============================================================
     private boolean handleCreator(CommandSender sender) {
         sender.sendMessage(colorize("&8&m----------------------------------"));
@@ -180,7 +236,7 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
     }
 
     // ============================================================
-    //  SCOREBOARD
+    //  /platform sb [reload]
     // ============================================================
     private boolean handleScoreboard(CommandSender sender, String[] args) {
         if (!(sender instanceof Player)) {
@@ -218,7 +274,7 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
     }
 
     // ============================================================
-    //  CONNECTION CHECK
+    //  /platform cc ...
     // ============================================================
     private boolean handleConnection(CommandSender sender, String[] args) {
         if (this.connection == null) {
@@ -361,9 +417,6 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
-    // ============================================================
-    //  REAL PING
-    // ============================================================
     private int getRealPing(Player player) {
         try {
             Object craftPlayer = player.getClass().getMethod("getHandle").invoke(player);
@@ -374,7 +427,7 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
     }
 
     // ============================================================
-    //  HELP
+    //  Help
     // ============================================================
     private void sendHelp(CommandSender sender) {
         sender.sendMessage(colorize("&8&m----------------------------------"));
@@ -389,6 +442,10 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
 
         if (sender.hasPermission("platform.setspawn")) {
             sender.sendMessage(colorize("&e/platform setspawn &7- Set the spawn point"));
+        }
+
+        if (sender.hasPermission("platform.setvoid")) {
+            sender.sendMessage(colorize("&e/platform setvoid [y] &7- Set void Y level"));
         }
 
         if (sender.hasPermission("platform.scoreboard.toggle")) {
@@ -413,7 +470,7 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
     }
 
     // ============================================================
-    //  TAB COMPLETE
+    //  Tab Complete
     // ============================================================
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
@@ -425,6 +482,7 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
             subs.add("help");
             if (sender.hasPermission("platform.kit")) subs.add("kit");
             if (sender.hasPermission("platform.setspawn")) subs.add("setspawn");
+            if (sender.hasPermission("platform.setvoid")) subs.add("setvoid");
             if (sender.hasPermission("platform.connection")) subs.add("cc");
             if (sender.hasPermission("platform.scoreboard.toggle")) subs.add("sb");
             if (sender.hasPermission("platform.reload")) subs.add("reload");
@@ -485,7 +543,7 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
     }
 
     // ============================================================
-    //  HELPERS
+    //  Helpers
     // ============================================================
     private void sendNoPerm(CommandSender sender) {
         sender.sendMessage(colorize("&cYou do not have permission to do this."));

@@ -14,6 +14,7 @@ public final class Platform extends JavaPlugin {
     private UnstableConnection unstableConnection;
     private PlayerJoin playerJoin;
     private ScoreboardManager scoreboardManager;
+    private Void voidSystem;
     private ComboSystem comboSystem;
 
     @Override
@@ -37,7 +38,11 @@ public final class Platform extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new KitRestore(this, this.playerJoin), this);
         getServer().getPluginManager().registerEvents(new Welcome(this), this);
 
-        // ---- combo system ----
+        // ---- void ----
+        this.voidSystem = new Void(this, this.playerJoin);
+        getServer().getPluginManager().registerEvents(this.voidSystem, this);
+
+        // ---- combo ----
         this.comboSystem = new ComboSystem(this);
         getServer().getPluginManager().registerEvents(this.comboSystem, this);
 
@@ -49,7 +54,7 @@ public final class Platform extends JavaPlugin {
 
         // ---- command ----
         PlatformCommand cmd = new PlatformCommand(this, this.unstableConnection,
-                this.playerJoin, this.scoreboardManager);
+                this.playerJoin, this.scoreboardManager, this.voidSystem);
         getCommand("platform").setExecutor(cmd);
         getCommand("platform").setTabCompleter(cmd);
 
@@ -100,6 +105,9 @@ public final class Platform extends JavaPlugin {
         setIfMissing(cfg, "spawn.yaw", Float.valueOf(0.0F));
         setIfMissing(cfg, "spawn.pitch", Float.valueOf(0.0F));
 
+        // ---- void ----
+        setIfMissing(cfg, "void.kill-height", Double.valueOf(-13.0D));
+
         // ---- connection check ----
         setIfMissing(cfg, "connection-check.enabled", Boolean.valueOf(true));
         setIfMissing(cfg, "connection-check.ping-threshold", Integer.valueOf(150));
@@ -117,16 +125,13 @@ public final class Platform extends JavaPlugin {
         setIfMissing(cfg, "quit-message",
                 "&b%player% &7left the game &8(&b%online%&7/&b%max_online%&8)");
 
-        // ---- combo system ----
+        // ---- combo ----
         setIfMissing(cfg, "combo.enabled", Boolean.valueOf(true));
         setIfMissing(cfg, "combo.step", Integer.valueOf(10));
-        setIfMissing(cfg, "combo.reset-time", Integer.valueOf(3000));
+        setIfMissing(cfg, "combo.reset-time", Long.valueOf(3000L));
         setIfMissing(cfg, "combo.sound-enabled", Boolean.valueOf(true));
         setIfMissing(cfg, "combo.broadcast-message",
-                "&8&m-------------------------------\\n"
-              + "&6&l⚔ COMBO &e&l%combo%x\\n"
-              + "&e%attacker% &7got a combo on &c%victim% &7(&6%combo% &7combo)\\n"
-              + "&8&m-------------------------------");
+                "&8&m-------------------------------\\n&6&lCOMBO &e&l%combo%x\\n&e%attacker% &7got a combo on &c%victim% &7(&6%combo% &7combo)\\n&8&m-------------------------------");
 
         try {
             cfg.save(configFile);
@@ -156,6 +161,10 @@ public final class Platform extends JavaPlugin {
 
     public ScoreboardManager getScoreboardManager() {
         return this.scoreboardManager;
+    }
+
+    public Void getVoidSystem() {
+        return this.voidSystem;
     }
 
     public ComboSystem getComboSystem() {
