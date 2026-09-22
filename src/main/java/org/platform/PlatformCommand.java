@@ -16,16 +16,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class PlatformCommand implements CommandExecutor, TabCompleter {
 
     private final JavaPlugin plugin;
-    private final UnstableConnection connection;
     private final PlayerJoin playerJoin;
     private final ScoreboardManager scoreboardManager;
     private final Void voidSystem;
 
-    public PlatformCommand(JavaPlugin plugin, UnstableConnection connection,
+    public PlatformCommand(JavaPlugin plugin,
                            PlayerJoin playerJoin, ScoreboardManager scoreboardManager,
                            Void voidSystem) {
         this.plugin = plugin;
-        this.connection = connection;
         this.playerJoin = playerJoin;
         this.scoreboardManager = scoreboardManager;
         this.voidSystem = voidSystem;
@@ -76,15 +74,6 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
             return handleCreator(sender);
         }
 
-        // ---------- /platform cc ... ----------
-        if (sub.equals("cc") || sub.equals("connectioncheck")) {
-            if (!sender.hasPermission("platform.connection")) {
-                sendNoPerm(sender);
-                return true;
-            }
-            return handleConnection(sender, args);
-        }
-
         // ---------- /platform sb ... ----------
         if (sub.equals("sb") || sub.equals("scoreboard")) {
             if (!sender.hasPermission("platform.scoreboard.toggle")) {
@@ -101,7 +90,6 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
                 return true;
             }
             this.plugin.reloadConfig();
-            this.connection.reloadConfig();
             if (this.scoreboardManager != null) {
                 this.scoreboardManager.reloadConfig();
             }
@@ -162,7 +150,6 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
         double y;
 
         if (args.length >= 2) {
-            // /platform setvoid <y>
             try {
                 y = Double.parseDouble(args[1]);
             } catch (NumberFormatException e) {
@@ -171,7 +158,6 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
                 return true;
             }
         } else {
-            // /platform setvoid  (use sender's current Y)
             if (!(sender instanceof Player)) {
                 sender.sendMessage(colorize("&cYou must be a player to use setvoid without a value."));
                 sender.sendMessage(colorize("&7From console: &e/platform setvoid <y>"));
@@ -274,159 +260,6 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
     }
 
     // ============================================================
-    //  /platform cc ...
-    // ============================================================
-    private boolean handleConnection(CommandSender sender, String[] args) {
-        if (this.connection == null) {
-            sender.sendMessage(colorize("&cError: Connection listener not found."));
-            return true;
-        }
-
-        if (args.length < 2) {
-            sender.sendMessage(colorize("&8&m----------------------------------"));
-            sender.sendMessage(colorize("&6&lConnection Check Status"));
-            sender.sendMessage(colorize("&7Enabled: " + (this.connection.isEnabled() ? "&aYES" : "&cNO")));
-            sender.sendMessage(colorize("&7Ping Threshold: &e" + this.connection.getPingThreshold() + "ms"));
-            sender.sendMessage(colorize("&7Usage: &e/platform cc on|off|toggle"));
-            sender.sendMessage(colorize("&7Usage: &e/platform cc bypass <player>"));
-            sender.sendMessage(colorize("&7Usage: &e/platform cc unbypass <player>"));
-            sender.sendMessage(colorize("&7Usage: &e/platform cc forceaddping <player> <ping>"));
-            sender.sendMessage(colorize("&7Usage: &e/platform cc ping <player> default"));
-            sender.sendMessage(colorize("&8&m----------------------------------"));
-            return true;
-        }
-
-        String arg = args[1].toLowerCase();
-
-        if (arg.equals("on")) {
-            this.connection.setEnabled(true);
-            sender.sendMessage(colorize("&aConnection check &lENABLED&a."));
-            return true;
-        }
-
-        if (arg.equals("off")) {
-            this.connection.setEnabled(false);
-            sender.sendMessage(colorize("&cConnection check &lDISABLED&c."));
-            return true;
-        }
-
-        if (arg.equals("toggle")) {
-            boolean state = !this.connection.isEnabled();
-            this.connection.setEnabled(state);
-            sender.sendMessage(colorize(state
-                    ? "&aConnection check &lENABLED&a."
-                    : "&cConnection check &lDISABLED&c."));
-            return true;
-        }
-
-        if (arg.equals("bypass")) {
-            if (args.length < 3) {
-                sender.sendMessage(colorize("&cUsage: /platform cc bypass <player>"));
-                return true;
-            }
-            Player target = Bukkit.getPlayer(args[2]);
-            if (target == null) {
-                sender.sendMessage(colorize("&cPlayer not found: &e" + args[2]));
-                return true;
-            }
-            this.connection.addBypass(target.getUniqueId());
-            sender.sendMessage(colorize("&a" + target.getName() + " is now bypassing connection check."));
-            return true;
-        }
-
-        if (arg.equals("unbypass")) {
-            if (args.length < 3) {
-                sender.sendMessage(colorize("&cUsage: /platform cc unbypass <player>"));
-                return true;
-            }
-            Player target = Bukkit.getPlayer(args[2]);
-            if (target == null) {
-                sender.sendMessage(colorize("&cPlayer not found: &e" + args[2]));
-                return true;
-            }
-            this.connection.removeBypass(target.getUniqueId());
-            sender.sendMessage(colorize("&a" + target.getName() + " is no longer bypassing."));
-            return true;
-        }
-
-        if (arg.equals("forceaddping")) {
-            if (args.length < 4) {
-                sender.sendMessage(colorize("&cUsage: /platform cc forceaddping <player> <ping>"));
-                return true;
-            }
-            Player target = Bukkit.getPlayer(args[2]);
-            if (target == null) {
-                sender.sendMessage(colorize("&cPlayer not found: &e" + args[2]));
-                return true;
-            }
-            int pingAmount;
-            try {
-                pingAmount = Integer.parseInt(args[3]);
-            } catch (NumberFormatException e) {
-                sender.sendMessage(colorize("&cInvalid ping amount: &e" + args[3]));
-                return true;
-            }
-            if (pingAmount < 0) {
-                sender.sendMessage(colorize("&cPing amount cannot be negative."));
-                return true;
-            }
-            int realPing = getRealPing(target);
-            if (pingAmount <= realPing) {
-                sender.sendMessage(colorize("&cThe forced ping must be higher than the player's current ping."));
-                sender.sendMessage(colorize("&7" + target.getName() + "'s current ping: &e" + realPing + "ms"));
-                return true;
-            }
-            if (pingAmount < this.connection.getPingThreshold()) {
-                sender.sendMessage(colorize("&cThe forced ping must be at least the threshold (&e"
-                        + this.connection.getPingThreshold() + "ms&c)."));
-                return true;
-            }
-            this.connection.setForcedPing(target.getUniqueId(), pingAmount);
-            sender.sendMessage(colorize("&aForced ping for &e" + target.getName() + " &aset to &e" + pingAmount + "ms&a."));
-            sender.sendMessage(colorize("&7Real ping: &e" + realPing + "ms &7| Threshold: &e"
-                    + this.connection.getPingThreshold() + "ms"));
-            return true;
-        }
-
-        if (arg.equals("ping")) {
-            if (args.length < 4) {
-                sender.sendMessage(colorize("&cUsage: /platform cc ping <player> default"));
-                return true;
-            }
-            Player target = Bukkit.getPlayer(args[2]);
-            if (target == null) {
-                sender.sendMessage(colorize("&cPlayer not found: &e" + args[2]));
-                return true;
-            }
-            String mode = args[3].toLowerCase();
-            if (!mode.equals("default")) {
-                sender.sendMessage(colorize("&cUsage: /platform cc ping <player> default"));
-                return true;
-            }
-            if (!this.connection.hasForcedPing(target.getUniqueId())) {
-                sender.sendMessage(colorize("&e" + target.getName() + " &7does not have a forced ping."));
-                return true;
-            }
-            this.connection.clearForcedPing(target.getUniqueId());
-            this.connection.removeBypass(target.getUniqueId());
-            sender.sendMessage(colorize("&aForced ping removed for &e" + target.getName() + "&a. Using real ping now."));
-            return true;
-        }
-
-        sender.sendMessage(colorize("&cUnknown argument. Use /platform cc"));
-        return true;
-    }
-
-    private int getRealPing(Player player) {
-        try {
-            Object craftPlayer = player.getClass().getMethod("getHandle").invoke(player);
-            return ((Integer) craftPlayer.getClass().getField("ping").get(craftPlayer)).intValue();
-        } catch (Exception e) {
-            return 0;
-        }
-    }
-
-    // ============================================================
     //  Help
     // ============================================================
     private void sendHelp(CommandSender sender) {
@@ -452,15 +285,6 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage(colorize("&e/platform sb &7- Toggle scoreboard visibility"));
         }
 
-        if (sender.hasPermission("platform.connection")) {
-            sender.sendMessage(colorize("&e/platform cc &7- Connection check status"));
-            sender.sendMessage(colorize("&e/platform cc on|off|toggle &7- Toggle connection check"));
-            sender.sendMessage(colorize("&e/platform cc bypass <player> &7- Bypass a player"));
-            sender.sendMessage(colorize("&e/platform cc unbypass <player> &7- Remove bypass"));
-            sender.sendMessage(colorize("&e/platform cc forceaddping <player> <ping> &7- Force ping"));
-            sender.sendMessage(colorize("&e/platform cc ping <player> default &7- Remove forced ping"));
-        }
-
         if (sender.hasPermission("platform.reload")) {
             sender.sendMessage(colorize("&e/platform reload &7- Reload configuration"));
             sender.sendMessage(colorize("&e/platform sb reload &7- Reload scoreboard.yml"));
@@ -483,7 +307,6 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
             if (sender.hasPermission("platform.kit")) subs.add("kit");
             if (sender.hasPermission("platform.setspawn")) subs.add("setspawn");
             if (sender.hasPermission("platform.setvoid")) subs.add("setvoid");
-            if (sender.hasPermission("platform.connection")) subs.add("cc");
             if (sender.hasPermission("platform.scoreboard.toggle")) subs.add("sb");
             if (sender.hasPermission("platform.reload")) subs.add("reload");
 
@@ -508,34 +331,6 @@ public class PlatformCommand implements CommandExecutor, TabCompleter {
             if (sender.hasPermission("platform.reload")) {
                 out.add("reload");
             }
-            return out;
-        }
-
-        if (args.length == 2 && args[0].equalsIgnoreCase("cc")) {
-            String partial = args[1].toLowerCase();
-            String[] subs = {"on", "off", "toggle", "bypass", "unbypass", "forceaddping", "ping"};
-            for (String s : subs) {
-                if (s.startsWith(partial)) out.add(s);
-            }
-            return out;
-        }
-
-        if (args.length == 3 && args[0].equalsIgnoreCase("cc")) {
-            String action = args[1].toLowerCase();
-            if (action.equals("bypass") || action.equals("unbypass")
-                    || action.equals("forceaddping") || action.equals("ping")) {
-                String partial = args[2].toLowerCase();
-                for (Player p : Bukkit.getOnlinePlayers()) {
-                    if (p.getName().toLowerCase().startsWith(partial)) {
-                        out.add(p.getName());
-                    }
-                }
-            }
-            return out;
-        }
-
-        if (args.length == 4 && args[0].equalsIgnoreCase("cc") && args[1].equalsIgnoreCase("ping")) {
-            out.add("default");
             return out;
         }
 

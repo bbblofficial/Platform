@@ -11,7 +11,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Platform extends JavaPlugin {
 
-    private UnstableConnection unstableConnection;
     private PlayerJoin playerJoin;
     private ScoreboardManager scoreboardManager;
     private Void voidSystem;
@@ -46,14 +45,11 @@ public final class Platform extends JavaPlugin {
         this.comboSystem = new ComboSystem(this);
         getServer().getPluginManager().registerEvents(this.comboSystem, this);
 
-        // ---- unstable connection ----
-        this.unstableConnection = new UnstableConnection(this);
-
         // ---- scoreboard ----
         this.scoreboardManager = new ScoreboardManager(this);
 
         // ---- command ----
-        PlatformCommand cmd = new PlatformCommand(this, this.unstableConnection,
+        PlatformCommand cmd = new PlatformCommand(this,
                 this.playerJoin, this.scoreboardManager, this.voidSystem);
         getCommand("platform").setExecutor(cmd);
         getCommand("platform").setTabCompleter(cmd);
@@ -108,17 +104,6 @@ public final class Platform extends JavaPlugin {
         // ---- void ----
         setIfMissing(cfg, "void.kill-height", Double.valueOf(-13.0D));
 
-        // ---- connection check ----
-        setIfMissing(cfg, "connection-check.enabled", Boolean.valueOf(true));
-        setIfMissing(cfg, "connection-check.ping-threshold", Integer.valueOf(150));
-        setIfMissing(cfg, "connection-check.check-interval", Integer.valueOf(20));
-        setIfMissing(cfg, "connection-check.grace-seconds", Integer.valueOf(30));
-        setIfMissing(cfg, "connection-check.warn-cooldown", Integer.valueOf(5));
-        setIfMissing(cfg, "connection-check.kick-message",
-                "&cUnstable connection\\n&fYour ping is too high: &e%ping%ms&7/&e%max%ms");
-        setIfMissing(cfg, "connection-check.broadcast-message",
-                "&c%player% &7was kicked for &eUnstable Connection &7(&c%ping%ms&7)");
-
         // ---- messages ----
         setIfMissing(cfg, "join-message",
                 "&b%player% &7joined the game &8(&b%online%&7/&b%max_online%&8)");
@@ -149,10 +134,6 @@ public final class Platform extends JavaPlugin {
         if (!cfg.contains(path)) {
             cfg.set(path, value);
         }
-    }
-
-    public UnstableConnection getUnstableConnection() {
-        return this.unstableConnection;
     }
 
     public PlayerJoin getPlayerJoin() {

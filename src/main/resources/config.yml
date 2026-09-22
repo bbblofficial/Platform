@@ -31,38 +31,6 @@ void:
   kill-height: -13.0
 
 # ----------------------------------------------------------
-#  Connection Check (Anti-Lag / High Ping Kick)
-#  Kicks players whose ping stays above threshold for too long
-# ----------------------------------------------------------
-connection-check:
-  # Enable or disable the entire system
-  enabled: true
-
-  # Ping threshold in milliseconds
-  # Players above this for grace-seconds will be kicked
-  ping-threshold: 150
-
-  # How often to check ping (in ticks, 20 ticks = 1 sec)
-  check-interval: 20
-
-  # Grace period before kicking (in seconds)
-  # Player must stay above threshold for this long to be kicked
-  grace-seconds: 30
-
-  # Cooldown between countdown warnings (in seconds)
-  warn-cooldown: 5
-
-  # Kick message shown to the player (private)
-  # %ping% = player's ping, %max% = threshold
-  kick-message: |-
-    &cUnstable connection
-    &fYour ping is too high: &e%ping%ms&7/&e%max%ms
-
-  # Broadcast message shown to everyone when a player is kicked
-  # %player% = player name, %ping% = player's ping, %max% = threshold
-  broadcast-message: '&c%player% &7was kicked for &eUnstable Connection &7(&c%ping%ms&7)'
-
-# ----------------------------------------------------------
 #  Join / Quit Messages
 #  Placeholders:
 #    %player%       - the player who joined/left

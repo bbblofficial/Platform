@@ -6,7 +6,7 @@ description: Simple cosmetic PvP platform plugin
 commands:
   platform:
     description: Main Platform command
-    usage: /platform <kit|setspawn|setvoid|creator|cc|sb|reload|help>
+    usage: /platform <kit|setspawn|setvoid|creator|sb|reload|help>
     aliases:
       - pf
 permissions:
@@ -18,9 +18,6 @@ permissions:
     default: op
   platform.setvoid:
     description: Allows setting the void Y level
-    default: op
-  platform.connection:
-    description: Allows managing the connection check
     default: op
   platform.reload:
     description: Allows reloading the config
